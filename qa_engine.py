@@ -3,20 +3,13 @@ import os
 import random
 from groq import Groq
 
-# -------------------------------------------------------
-# 🔑 Groq client — API key loaded from environment variable
-#    Set it before running:  export GROQ_API_KEY="your_key"
-#    or via st.secrets / .env file
-# -------------------------------------------------------
+
 GROQ_API_KEY="ENTER YOUR API KEY"
 client = Groq(api_key=GROQ_API_KEY)
 
 MODEL = "llama-3.3-70b-versatile"
 
 
-# -------------------------------------------------------
-# Helper: build context string from retrieved docs
-# -------------------------------------------------------
 def _build_context(docs):
     parts = []
     for doc in docs:
@@ -27,9 +20,7 @@ def _build_context(docs):
     return "\n\n---\n\n".join(parts)
 
 
-# -------------------------------------------------------
-# Helper: build conversation messages for multi-turn chat
-# -------------------------------------------------------
+
 def _build_messages(context, query, chat_history):
     system_prompt = (
         "You are an expert PDF assistant. "
@@ -42,17 +33,16 @@ def _build_messages(context, query, chat_history):
 
     messages = [{"role": "system", "content": system_prompt}]
 
-    # Add prior turns (skip the very last user message — we'll add it with context)
+
     history_turns = [
         (role, msg)
         for role, msg, _ in (chat_history or [])
         if role in ("user", "assistant")
     ]
-    # Keep last 6 turns to stay within token limits
+
     for role, msg in history_turns[-6:]:
         messages.append({"role": role, "content": msg})
 
-    # Final user message with freshly retrieved context
     user_content = (
         f"Context from the PDF:\n\n{context}\n\n"
         f"---\n\nQuestion: {query}"
@@ -61,9 +51,7 @@ def _build_messages(context, query, chat_history):
     return messages
 
 
-# -------------------------------------------------------
-# 1. Q&A
-# -------------------------------------------------------
+
 def ask_question(vector_db, query, chat_history=None, k=4):
     """
     Ask LLM a question using top-k similar chunks from the vector store.
@@ -92,9 +80,7 @@ def ask_question(vector_db, query, chat_history=None, k=4):
     return answer_text, sources
 
 
-# -------------------------------------------------------
-# 2. Suggested follow-up questions
-# -------------------------------------------------------
+
 def generate_suggestions(vector_db, chat_history, k=3):
     """
     Generate 3 dynamic suggested questions based on the last user message
@@ -117,7 +103,7 @@ def generate_suggestions(vector_db, chat_history, k=3):
 
     last_user_msg = user_msgs[-1]
 
-    # Retrieve context related to last question for smarter suggestions
+  
     docs = vector_db.similarity_search(last_user_msg, k=2)
     context_snippet = _build_context(docs)[:1500]
 
@@ -159,9 +145,8 @@ def generate_suggestions(vector_db, chat_history, k=3):
     return fallbacks[:k]
 
 
-# -------------------------------------------------------
-# 3. PDF Summarization
-# -------------------------------------------------------
+
+
 def summarize_pdf(vector_db, k=6):
     """
     Summarize the PDF using top-k chunks retrieved for a broad summary query.
