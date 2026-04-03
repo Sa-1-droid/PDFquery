@@ -2,7 +2,7 @@
 
 An intelligent PDF question-answering application that allows users to **chat with PDFs**, extract insights, and navigate directly to relevant content with **clickable, highlighted sources**.
 
-Built using **Streamlit, LLMs, and vector search**, this project transforms static PDFs into interactive knowledge systems.
+Built using **Streamlit, Groq LLMs, and vector search**, this project transforms static PDFs into interactive knowledge systems.
 
 ---
 
@@ -11,21 +11,25 @@ Built using **Streamlit, LLMs, and vector search**, this project transforms stat
 ### 🔍 Ask Questions from PDFs
 
 * Upload any PDF and ask questions in natural language
-* Get accurate answers based strictly on document content
+* Get accurate answers strictly based on document content
 
 ### 🧠 AI-Powered Responses
 
-* Uses LLM (Groq + LLaMA 3) for context-aware answers
+* Powered by **Groq (LLaMA 3.3 70B)**
+* Context-aware answers using retrieved PDF chunks
 * Maintains conversational memory for follow-ups
 
 ### 📌 Clickable Source References
 
-* Each answer includes source citations
-* Click to:
+Each answer includes source citations.
 
-  * Open the PDF
-  * Jump to the exact page
-  * Highlight relevant text
+Click a source to:
+
+* Open the PDF
+* Jump to the exact page
+* View the relevant text
+
+---
 
 ### 💡 Smart Suggestions
 
@@ -34,15 +38,15 @@ Built using **Streamlit, LLMs, and vector search**, this project transforms stat
 
 ### 📝 PDF Summarization
 
-* Generates structured summaries:
+Generates structured summaries:
 
-  * Overview
-  * Key points
-  * Conclusion
+* Overview
+* Key points
+* Conclusion
 
 ### 🔊 Text-to-Speech
 
-* Converts AI responses into audio for accessibility
+* Converts AI responses into audio
 
 ### 📥 Export Chat
 
@@ -58,7 +62,7 @@ Built using **Streamlit, LLMs, and vector search**, this project transforms stat
 | LLM API         | Groq (LLaMA 3.3 70B)     |
 | Embeddings      | HuggingFace Transformers |
 | Vector Database | FAISS                    |
-| PDF Parsing     | PyPDF                    |
+| PDF Processing  | PyPDF                    |
 | Text-to-Speech  | gTTS                     |
 | PDF Export      | ReportLab                |
 
@@ -66,14 +70,14 @@ Built using **Streamlit, LLMs, and vector search**, this project transforms stat
 
 ## ⚙️ How It Works
 
-1. **Upload PDF**
+1. Upload a PDF
 2. Text is extracted and split into chunks
 3. Chunks are converted into embeddings
 4. Stored in a FAISS vector database
 5. User asks a question
 6. Relevant chunks are retrieved
-7. LLM generates answer using context
-8. Sources are displayed with page navigation + highlight
+7. LLM generates an answer using context
+8. Sources are displayed with page navigation
 
 ---
 
@@ -82,7 +86,7 @@ Built using **Streamlit, LLMs, and vector search**, this project transforms stat
 1. Upload a PDF
 2. Ask a question
 3. Get AI-generated answer
-4. Click source → open PDF → view highlighted text
+4. Click source → open PDF → view relevant section
 
 ---
 
@@ -101,13 +105,30 @@ cd PDFquery
 pip install -r requirements.txt
 ```
 
-### 3️⃣ Set API Key
+---
 
-```bash
-export GROQ_API_KEY="your_api_key"
+## 🔑 Set API Key (IMPORTANT)
+
+This project requires a **Groq API key**.
+
+1. Open `qa_engine.py`
+2. Find this line:
+
+```python
+GROQ_API_KEY="ENTER YOUR API KEY"
 ```
 
-### 4️⃣ Run App
+3. Replace it with your actual API key:
+
+```python
+GROQ_API_KEY="your_actual_api_key"
+```
+
+⚠️ Do NOT share your API key publicly.
+
+---
+
+## ▶️ Run App
 
 ```bash
 streamlit run app.py
@@ -140,8 +161,8 @@ streamlit run app.py
 ## ⚠️ Limitations
 
 * Highlighting depends on browser PDF viewer
-* Large PDFs may load slower (base64 rendering)
-* Not pixel-perfect highlighting (browser limitation)
+* Not pixel-perfect highlighting
+* Large PDFs may load slower
 
 ---
 
@@ -165,8 +186,8 @@ Feel free to open issues or submit pull requests.
 
 If you found this project useful:
 
-👉 Give it a star ⭐
-👉 Share it with others
+⭐ Star this repository
+📢 Share it with others
 
 ---
 
@@ -175,4 +196,3 @@ If you found this project useful:
 For queries or collaboration, feel free to reach out!
 
 ---
-
