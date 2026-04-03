@@ -92,6 +92,7 @@ Built using **Streamlit, LLMs, and vector search**, this project transforms stat
 
 ```bash
 git clone https://github.com/Sa-1-droid/PDFquery.git
+cd PDFquery
 ```
 
 ### 2️⃣ Install Dependencies
