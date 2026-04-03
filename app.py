@@ -13,18 +13,13 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.pagesizes import A4
 
-# ------------------------------------------------------------------
-# ⚙️ Page config
-# ------------------------------------------------------------------
+
 st.set_page_config(
     page_title="AI PDF Assistant",
     page_icon="📄",
     layout="wide",
 )
 
-# ------------------------------------------------------------------
-# 💅 Custom CSS
-# ------------------------------------------------------------------
 st.markdown("""
 <style>
 /* Remove default top padding */
@@ -68,34 +63,27 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ------------------------------------------------------------------
-# 🗃️ Session state initialization
-# ------------------------------------------------------------------
 for key, default in {
-    "chat_history": [],       # list of (role, message, sources)
+    "chat_history": [],      
     "vector_db": None,
     "pdf_file_name": None,
     "suggestions": [],
     "summary": None,
-    "audio_files": [],        # track temp audio files
+    "audio_files": [],       
 }.items():
     if key not in st.session_state:
         st.session_state[key] = default
 
-# ------------------------------------------------------------------
-# 🔊 Text-to-speech helper
-# ------------------------------------------------------------------
+
 def speak(text: str) -> str:
     """Generate an mp3, save to a temp file, return the path."""
     tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
-    tts = gTTS(text[:500])          # limit length for speed
+    tts = gTTS(text[:500])         
     tts.save(tmp.name)
     st.session_state.audio_files.append(tmp.name)
     return tmp.name
 
-# ------------------------------------------------------------------
-# 📥 Export chat as PDF
-# ------------------------------------------------------------------
+
 def export_chat_pdf() -> bytes:
     buf = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
     doc = SimpleDocTemplate(buf.name, pagesize=A4)
@@ -120,9 +108,7 @@ def export_chat_pdf() -> bytes:
     with open(buf.name, "rb") as f:
         return f.read()
 
-# ------------------------------------------------------------------
-# 🖼️ Sidebar — PDF upload & controls
-# ------------------------------------------------------------------
+
 with st.sidebar:
     st.markdown("## 📄 AI PDF Assistant")
     st.markdown("---")
@@ -130,7 +116,7 @@ with st.sidebar:
     uploaded_file = st.file_uploader("Upload PDF", type="pdf", label_visibility="collapsed")
 
     if uploaded_file:
-        # Process only if a new file is uploaded
+       
         if st.session_state.pdf_file_name != uploaded_file.name:
             with st.spinner("🔍 Processing PDF…"):
                 raw_docs = load_and_split_pdfs([uploaded_file])
@@ -146,7 +132,7 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # 📝 Summarize
+  
     if st.button("📝 Summarize PDF", use_container_width=True, disabled=not st.session_state.vector_db):
         with st.spinner("Summarizing…"):
             st.session_state.summary = summarize_pdf(st.session_state.vector_db)
@@ -157,7 +143,7 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # 📥 Export
+ 
     if st.button("📥 Export Chat as PDF", use_container_width=True, disabled=not st.session_state.chat_history):
         pdf_bytes = export_chat_pdf()
         st.download_button(
@@ -170,21 +156,19 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # 🆕 New Chat
+   
     if st.button("🆕 New Chat", use_container_width=True):
         for key in ["chat_history", "vector_db", "pdf_file_name", "suggestions", "summary"]:
             st.session_state[key] = [] if key in ["chat_history", "suggestions"] else None
         st.rerun()
 
-# ------------------------------------------------------------------
-# 💬 Main chat area
-# ------------------------------------------------------------------
+
 st.markdown("### 💬 Chat with your PDF")
 
 if not st.session_state.vector_db:
     st.info("👈 Upload a PDF from the sidebar to get started.")
 else:
-    # ── Display existing chat history ──────────────────────────────
+    
     for role, msg, sources in st.session_state.chat_history:
         with st.chat_message(role):
             if role == "user":
@@ -198,7 +182,7 @@ else:
                     )
                     st.markdown(f'<div style="margin-top:6px">{pills}</div>', unsafe_allow_html=True)
 
-    # ── Suggested questions ────────────────────────────────────────
+   
     if st.session_state.suggestions:
         st.markdown('<p class="suggestion-label">💡 Suggested questions:</p>', unsafe_allow_html=True)
         cols = st.columns(len(st.session_state.suggestions))
@@ -218,11 +202,11 @@ else:
                 )
                 st.rerun()
 
-    # ── Chat input ─────────────────────────────────────────────────
+
     query = st.chat_input("Ask something about your PDF…")
 
     if query:
-        # Add user message
+
         st.session_state.chat_history.append(("user", query, None))
         st.session_state.suggestions = []
 
@@ -240,7 +224,7 @@ else:
                     st.session_state.chat_history,
                 )
 
-            # ⚡ Streaming word-by-word effect
+  
             words = answer.split()
             for i, word in enumerate(words):
                 full_response += word + " "
@@ -254,7 +238,7 @@ else:
                 unsafe_allow_html=True,
             )
 
-            # 📌 Source pills
+           
             if sources:
                 pills = "".join(
                     f'<span class="source-pill">📄 {s["source"]} · p.{s["page"]}</span>'
@@ -262,14 +246,13 @@ else:
                 )
                 st.markdown(f'<div style="margin-top:6px">{pills}</div>', unsafe_allow_html=True)
 
-            # 🔊 Voice output
             try:
                 audio_path = speak(answer)
                 st.audio(audio_path, format="audio/mp3")
             except Exception:
-                pass  # Voice is optional — don't crash if gTTS fails
+                pass  
 
-        # Save to history & generate new suggestions
+       
         st.session_state.chat_history.append(("assistant", answer, sources))
         with st.spinner("Generating suggestions…"):
             st.session_state.suggestions = generate_suggestions(
