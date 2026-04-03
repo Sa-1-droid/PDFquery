@@ -91,8 +91,7 @@ Built using **Streamlit, LLMs, and vector search**, this project transforms stat
 ### 1️⃣ Clone Repository
 
 ```bash
-git clone https://github.com/your-username/ai-pdf-query-assistant.git
-cd pdf-agent
+git clone https://github.com/Sa-1-droid/PDFquery.git
 ```
 
 ### 2️⃣ Install Dependencies
