@@ -8,6 +8,7 @@ from groq import Groq
 #    Set it before running:  export GROQ_API_KEY="your_key"
 #    or via st.secrets / .env file
 # -------------------------------------------------------
+GROQ_API_KEY="ENTER YOUR API KEY"
 client = Groq(api_key=os.environ.get("GROQ_API_KEY", ""))
 
 MODEL = "llama-3.3-70b-versatile"
