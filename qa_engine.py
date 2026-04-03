@@ -9,7 +9,7 @@ from groq import Groq
 #    or via st.secrets / .env file
 # -------------------------------------------------------
 GROQ_API_KEY="ENTER YOUR API KEY"
-client = Groq(api_key=os.environ.get("GROQ_API_KEY", ""))
+client = Groq(api_key=GROQ_API_KEY)
 
 MODEL = "llama-3.3-70b-versatile"
 
